@@ -1,0 +1,59 @@
+.body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Silkscreen', sans-serif;
+}
+
+.bloc {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bloc video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -10;
+}
+
+.bloc .content {
+    position: relative;
+    z-index: 10;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.bloc .content h1 {
+    font-size: 5rem;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: 'Silkscreen', sans-serif;;
+}
+
+.bloc .content p {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    font-family: "Sofia", sans-serif;
+}
+
+.bloc::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(207, 76, 194, 0.144);
+}
