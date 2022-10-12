@@ -115,7 +115,6 @@ class MyAudioPlayer extends HTMLElement {
         // le son du lecteur et pouvoir le traiter
         // en insérant des "noeuds" webaudio dans le graphe
         this.buildAudioGraph();
-        //this.buildFrequenceGraph();
 
         // on démarre l'animation
         requestAnimationFrame(() => {
@@ -190,6 +189,7 @@ class MyAudioPlayer extends HTMLElement {
 
         // dessiner le graphe WaveForm
         this.canvasWaveFormCtx.clearRect(0, 0, this.canvasWaveForm.width, this.canvasWaveForm.height);
+        this.canvasWaveFormCtx.fillRect(0, 0, this.canvasWaveForm.width, this.canvasWaveForm.height); //remplit le background
         this.analyserWaveForm.getByteTimeDomainData(this.analyserWaveForm.dataArray);
         this.canvasWaveFormCtx.lineWidth = 2;
         this.canvasWaveFormCtx.strokeStyle = "lightgreen";
