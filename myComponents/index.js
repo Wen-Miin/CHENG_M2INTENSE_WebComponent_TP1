@@ -15,16 +15,21 @@ class MyAudioPlayer extends HTMLElement {
         super();
         // Récupération des attributs HTML
         this.value = this.getAttribute("value");
+        this.src = this.getAttribute('src');
+
+        // pour les fréquences
+        this.mapFreq = new Map();
+        this.frequences = [60, 170, 350, 1000, 3500, 10000];
+        this.filtres = [];
 
         // On crée un shadow DOM
         this.attachShadow({ mode: "open" });
 
         console.log("URL de base du composant : " + getBaseURL())
 
-        //création de la playlist (musiques dans le dossier assets)
+        //création de la playlist (musiques dans le dossier assets > audio)
         this.playlist = [
             "myComponents/assets/audio/Ancestral Spirits.mp3",
-            "myComponents/assets/audio/Adventurous-Minds.mp3",
             "myComponents/assets/audio/Audiorezout - Storm Clouds.mp3",
             "myComponents/assets/audio/Blood-Sweat-and-Tears.mp3",
             "myComponents/assets/audio/Bohemian Garden.mp3",
@@ -64,12 +69,13 @@ class MyAudioPlayer extends HTMLElement {
         // récupération de l'élement d'une musique
         this.i = 0;
         this.piste = this.playlist[this.i];
-        console.log ("piste : " + this.piste);
+        console.log("piste : " + this.piste);
         this.titre = this.listeTitres[this.i];
     }
 
     // Définition des valeurs initiales 
     defineInitialValues() {
+        this.player.src = this.src;
         const volumeMax = this.audioCtx.destination.maxGain;
         const volumeKnob = this.shadowRoot.querySelector("#volumeKnob");
         volumeKnob.value = volumeMax * 100;
@@ -80,8 +86,7 @@ class MyAudioPlayer extends HTMLElement {
         this.balanceSlider = this.shadowRoot.querySelector("#balanceSlider");
         this.shadowRoot.querySelector('.durée').innerHTML = this.convertionTemps(this.player.duration);
         this.shadowRoot.querySelector(".titre").innerHTML = this.titre;
-        this.shadowRoot.querySelector(".piste").innerHTML = this.piste;
-        //var pannerNode;
+        this.shadowRoot.querySelector(".piste").innerHTML = this.player.src;
     }
 
 
@@ -101,15 +106,14 @@ class MyAudioPlayer extends HTMLElement {
   }
   </style>
   
+  <h2 class="titre"> Titre : ${this.titre}</h2>
+
   <canvas id="my-canvas-frequency" width=400></canvas>
   <canvas id="my-canvas-wave-form" width=400></canvas>
 
   <br>
-  <br>
 
-  <audio id="myPlayer" src="${this.piste}" crossorigin="anonymous" controls></audio>
-  <h1 class="titre"> Titre : ${this.titre}</h1>
-  
+  <audio id="myPlayer" src="${this.piste}"" crossorigin="anonymous" controls type="audio/mp3"></audio>
   <br>
   <div id="progression">
         Progression : 
@@ -117,7 +121,17 @@ class MyAudioPlayer extends HTMLElement {
         <input id="progressBar" type="range" value=0 min=0 max=1>
         <span id="durée">0:00</span>
     </div>
-    <br>
+
+    <label>Vitesse de lecture
+     0 <input id="vitesseLecture" type="range" min=0.2 max=4 step=0.1 value=1> 4
+  </label>
+  <br>
+  
+  <label for="balance"> Balance : </label>
+  Gauche
+  <input type="range" min="-1" max="1" step="0.1" value="0" id="balanceSlider" /> Droite
+  <br>
+  <br>
 
   <button id="previous"> <img src="./myComponents/assets/imgs/backward-icon.png" height="30" width="30"> </img> </br> Previous </button> 
   <button id="play"> <img src="http://www.i2clipart.com/cliparts/0/2/f/c/clipart-windows-media-player-play-button-updated-512x512-02fc.png" height="30" width="30"> </img> </br> Play </button> 
@@ -137,17 +151,14 @@ class MyAudioPlayer extends HTMLElement {
   </webaudio-knob>
   
   <br>
-  <label>Vitesse de lecture
-     0 <input id="vitesseLecture" type="range" min=0.2 max=4 step=0.1 value=1> 4
-  </label>
   <br>
-  <br>
-  
-  <label for="balance"> Balance : </label>
-  Gauche
-  <input type="range" min="-1" max="1" step="0.1" value="0" id="balanceSlider" /> Droite
-  <br>
-  <br>
+
+  <input id="freq60" type="range" min="0" max="100" value="0" step="1" />  60Hz    <br>
+  <input id="freq170" type="range" min="0" max="100" value="0" step="1" /> 170Hz   <br>
+  <input id="freq350" type="range" min="0" max="100" value="0" step="1" />  350Hz   <br>
+  <input id="freq1000" type="range" min="0" max="100" value="0" step="1" />  1000Hz  <br>
+  <input id="freq3500" type="range" min="0" max="100" value="0" step="1" />  3500Hz  <br>
+  <input id="freq10000" type="range" min="0" max="100" value="0" step="1" />  10000Hz <br>
 
   `;
         // fix relative URLs
@@ -203,6 +214,19 @@ class MyAudioPlayer extends HTMLElement {
         this.bufferLength = this.analyserNode.frequencyBinCount;
         this.dataArray = new Uint8Array(this.bufferLength);
 
+        const interval = setInterval(() => {
+            if (this.audioContext) {
+                this.frequences.forEach((freq) => {
+                    const val = this.audioContext.createBiquadFilter(this.player);
+                    val.frequency.value = freq;
+                    val.type = 'peaking';
+                    val.player.value = 0;
+                    this.filters.push(val);
+                });
+                clearInterval(interval);
+            }
+        }, 500);
+
 
         // lecteur audio -> analyser -> haut parleurs
         playerNode.connect(this.analyserNode);
@@ -224,6 +248,23 @@ class MyAudioPlayer extends HTMLElement {
         // connect nodes together
         playerNode.connect(this.pannerNode);
         this.pannerNode.connect(audioContext.destination);
+
+        // node pour les fréquences
+        /*
+        let currentNode = playerNode;
+        for (let filter of this.mapFreq.values()) {
+            currentNode.connect(filter);
+            currentNode = filter;
+        }
+
+        this.playerNode.connect(this.filtres[0])
+
+        for (let i = 0; i < this.filtres.length - 1; i++) {
+            this.filters[i].connect(this.filters[i + 1])
+        }
+
+        this.filtres[this.filtres.length - 1].connect(this.pannerNode)
+        */
 
     }
 
@@ -345,21 +386,21 @@ class MyAudioPlayer extends HTMLElement {
             console.log("volume = " + this.player.volume);
         }
 
-    //this.progressBar = this.shadowRoot.querySelector('#progressBar');
-    //écouteur pour la durée d'une musique
-    this.player.addEventListener('loadedmetadata', () => {
-        //this.shadowRoot.querySelector("#progress") = this.player.duration;
-        this.duration = this.player.duration;
-        this.progressBar = document.getElementsByClassName("#progressBar");
-        this.progressBar.max = this.player.duration; //durée de la musique
-        this.progressBar.value = this.player.currentTime; //position de la barre de progression
-        this.progressBar.step = 0.1; //pas de la barre de progression
-        //const secondes = ParseInt('${this.duration % 60}', 10);
-        //const minutes = ParseInt('${(this.duration/60) % 60}', 10);
-        //this.duration.textContent = '${minutes}:${secondes}';
-        console.log("durée de la musique : " + this.convertionTemps(this.player.duration));
-        console.log("temps actuel : " + this.convertionTemps(this.player.currentTime));
-    });
+        //this.progressBar = this.shadowRoot.querySelector('#progressBar');
+        //écouteur pour la durée d'une musique
+        this.player.addEventListener('loadedmetadata', () => {
+            //this.shadowRoot.querySelector("#progress") = this.player.duration;
+            this.duration = this.player.duration;
+            this.progressBar = document.getElementsByClassName("#progressBar");
+            this.progressBar.max = this.player.duration; //durée de la musique
+            this.progressBar.value = this.player.currentTime; //position de la barre de progression
+            this.progressBar.step = 0.1; //pas de la barre de progression
+            //const secondes = ParseInt('${this.duration % 60}', 10);
+            //const minutes = ParseInt('${(this.duration/60) % 60}', 10);
+            //this.duration.textContent = '${minutes}:${secondes}';
+            console.log("durée de la musique : " + this.convertionTemps(this.player.duration));
+            console.log("temps actuel : " + this.convertionTemps(this.player.currentTime));
+        });
 
         //this.shadowRoot.querySelector("#progressBar").oninput = (event) => {
         //    //const tempsActuel = this.player.currentTime * (parseFloat(event.target.value) - 1000 / 60);
@@ -368,7 +409,7 @@ class MyAudioPlayer extends HTMLElement {
         //    console.log("progression =  " + this.player.currentTime);
         //}
 
-        
+
         ////écouteur pour la balance droite / gauche 
         this.shadowRoot.querySelector('#balanceSlider').oninput = (evt) => {
             this.pannerNode.pan.value = evt.target.value;
@@ -378,41 +419,74 @@ class MyAudioPlayer extends HTMLElement {
 
         // écouteur pour le bouton previous
         this.shadowRoot.querySelector('#previous').onclick = (evt) => {
-            this.player.src = this.previousTitre();
-            this.player.play();
+            this.i--;
+            if (this.i < 0) {
+                this.i = this.playlist.length - 1;
+            }
+            console.log("source avant " + this.player.src);
+            console.log("piste " + this.playlist[this.i]);
+
             console.log("previous titre");
+            //this.player.piste = this.playlist[this.i];
+            this.piste = this.playlist[this.i];
+            this.titre = this.listeTitres[this.i];
+            console.log("nouvel piste " + this.piste);
+            console.log("nouveau titre " + this.titre);
+
+            try {
+                this.player.src = this.piste;
+
+            }
+            catch (e) {
+                console.log("erreur : " + e);
+            }
+            this.player.src = this.playlist[this.i];
+            this.player.titre = this.listeTitres[this.i];
+
+            //this.player.src = getBaseURL()+this.playlist[this.i];
+
+            this.player.play();
         }
 
         // écouteur pour le bouton next
         this.shadowRoot.querySelector('#next').onclick = () => {
             this.i++;
-            if (this.i >= this.playlist.length) {
+            if (this.i > this.playlist.length - 1) {
                 this.i = 0;
             }
-            console.log(this.player.src);
-            console.log(this.playlist[this.i]);
-    
+            console.log("source avant " + this.player.src);
+            console.log("piste " + this.playlist[this.i]);
+
+            console.log("next titre");
             //this.player.piste = this.playlist[this.i];
             this.piste = this.playlist[this.i];
             this.titre = this.listeTitres[this.i];
-            console.log(this.piste);
-            console.log(this.titre );
-            
+            console.log("nouvel piste " + this.piste);
+            console.log("nouveau titre " + this.titre);
+
             try {
                 this.player.src = this.piste;
-                this.player.load();
-                this.player.play();
+
             }
             catch (e) {
                 console.log("erreur : " + e);
             }
-            //this.player.src = this.playlist[this.i];
+            this.player.src = this.playlist[this.i];
+            this.player.titre = this.listeTitres[this.i];
 
-            //this.player.play();
-            console.log("next titre");
+            //this.player.src = getBaseURL()+this.playlist[this.i];
+
+            this.player.play();
+
         }
 
-        
+        // écouteur pour les sliders de fréquences 
+        this.shadowRoot.querySelector('#freq60').oninput = (evt) => {
+            this.biquadFilterNode.frequency.value = evt.target.value;
+            console.log("fréquence modifiée, valeur : " + this.biquadFilterNode.frequency.value);
+        }
+
+
     }
 
     // fonction pour connaitre la durée de la musique en minutes et secondes
@@ -438,10 +512,6 @@ class MyAudioPlayer extends HTMLElement {
         this.player.play();
     }
 
-    // fonction pour passer à la musique suivante
-    nextTitre() {
-
-    }
 
 
 
@@ -460,13 +530,13 @@ class MyAudioPlayer extends HTMLElement {
     //attachEvent() {
     //    this.player.addEventListener("click", this.clickToPlay.bind(this));
     //}
-//
+    //
     //
     //async clickToPlay() {
     //    if (this.audioCtx.state === "suspended") {
     //        await this.audioCtx.resume();
     //    }
-//
+    //
     //    if (this.playing) {
     //        return this.audioCtx.pause();
     //        this.playing = false;

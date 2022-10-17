@@ -1,15 +1,39 @@
-# credits 
-Musique: https://audiotrimmer.com/fr/royalty-free-music/
-Music by https://www.fiftysounds.com 
-https://freemusicarchive.org/genre/Soundtrack
+# Lecteur web audio 
 
-Video by <a href="https://pixabay.com/users/tommyvideo-3092371/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Tomislav Jakupec</a> from <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Pixabay</a>
+Projet consistant à la réalisation d'un lecteur de musique sur le web.
+
+## Visualisation du son 
+Sous forme de barre et de vagues
+
+## Volume et Balance
+Possibilité de modifier le volume et la balance (écouteur gauche ou droite)
+
+## Playlist 
+Possibilité de changer de musique pour la suivante ou la précédente 
 
 # To Do 
- - Playlist 
- - Egaliseur
+- Barre de progression à corriger
+- Egaliseur à terminer 
+- Lecture aléatoire
+- Vidéo d'ambiance en fond
 
 # Améliorable 
 - Changement du bouton play/pause selon l'event 
 - Les sliders (visu)
 
+# Credits 
+## Musique: 
+- https://audiotrimmer.com/fr/royalty-free-music/
+- https://www.fiftysounds.com 
+- https://freemusicarchive.org/genre/Soundtrack
+
+## Video :
+<a href="https://pixabay.com/users/tommyvideo-3092371/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Tomislav Jakupec</a> from <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Pixabay</a>
+
+## Aides pour ce projet : 
+- le cours et les exemples de M. BUFFA
+- l'extension CoPilot de Visual Studio Code
+- Le github de D.Chapoulie : https://github.com/Dorian-Chapoulie/tp_webcomponents
+- Quelques explications de la part de Y. OUALI (https://webaudio.oualiyannick.fr/)
+- Visionnage de YouTube
+- Bons nombres de recherches internet 
