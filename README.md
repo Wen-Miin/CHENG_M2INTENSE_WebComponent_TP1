@@ -3,14 +3,14 @@
 Projet consistant à la réalisation d'un lecteur de musique sur le web.
 
 ## Visualisation du son 
-Sous forme de barre et de vagues
+- Sous forme de barre et de vagues
 
 ## Volume et Balance
-Possibilité de modifier le volume et la balance (écouteur gauche ou droite)
+- Possibilité de modifier le volume et la balance (écouteur gauche ou droite)
 
 ## Playlist 
-Possibilité de changer de musique pour la suivante ou la précédente 
-Lecture automatique : dès qu'une musique se termine, la suivante commence
+- Possibilité de changer de musique pour la suivante ou la précédente 
+- Lecture automatique : dès qu'une musique se termine, la suivante commence
 
 # To Do 
 - Barre de progression à corriger
