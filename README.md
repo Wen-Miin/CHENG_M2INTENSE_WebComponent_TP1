@@ -10,11 +10,13 @@ Possibilité de modifier le volume et la balance (écouteur gauche ou droite)
 
 ## Playlist 
 Possibilité de changer de musique pour la suivante ou la précédente 
+Lecture automatique : dès qu'une musique se termine, la suivante commence
 
 # To Do 
 - Barre de progression à corriger
 - Egaliseur à terminer 
-- Lecture aléatoire
+- Lecture aléatoire = bouton
+- Lecture en boucle = bouton
 - Vidéo d'ambiance en fond
 
 # Améliorable 

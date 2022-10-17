@@ -189,12 +189,8 @@ class MyAudioPlayer extends HTMLElement {
             this.animationLoop();
         });
 
-
         // mise à jour de la barre de progression
         this.updateProgress();
-
-        // 
-        //this.balanceAudio();
 
     }
 
@@ -435,15 +431,12 @@ class MyAudioPlayer extends HTMLElement {
 
             try {
                 this.player.src = this.piste;
-
+                this.player.titre = this.titre;
+                this.shadowRoot.querySelector('.titre').innerHTML = "Titre : " + this.titre;
             }
             catch (e) {
                 console.log("erreur : " + e);
             }
-            this.player.src = this.playlist[this.i];
-            this.player.titre = this.listeTitres[this.i];
-
-            //this.player.src = getBaseURL()+this.playlist[this.i];
 
             this.player.play();
         }
@@ -466,19 +459,36 @@ class MyAudioPlayer extends HTMLElement {
 
             try {
                 this.player.src = this.piste;
-
+                this.shadowRoot.querySelector('.titre').innerHTML = "Titre : " + this.titre;
             }
             catch (e) {
                 console.log("erreur : " + e);
             }
-            this.player.src = this.playlist[this.i];
-            this.player.titre = this.listeTitres[this.i];
-
-            //this.player.src = getBaseURL()+this.playlist[this.i];
 
             this.player.play();
 
         }
+
+        // tourne en boucle 
+        this.player.addEventListener('ended', () => {
+            //this.playing = false;
+            this.i++;
+            if (this.i > this.playlist.length - 1) {
+                this.i = 0;
+            }
+            //this.player.piste = this.playlist[this.i];
+            this.piste = this.playlist[this.i];
+            this.titre = this.listeTitres[this.i];
+            try {
+                this.player.src = this.piste;
+                this.shadowRoot.querySelector('.titre').innerHTML = "Titre : " + this.titre;
+            }
+            catch (e) {
+                console.log("erreur : " + e);
+            }
+            this.player.play();
+        });
+
 
         // écouteur pour les sliders de fréquences 
         this.shadowRoot.querySelector('#freq60').oninput = (evt) => {
