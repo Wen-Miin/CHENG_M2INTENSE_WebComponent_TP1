@@ -31,8 +31,8 @@ Possibilité de changer de musique pour la suivante ou la précédente
 <a href="https://pixabay.com/users/tommyvideo-3092371/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Tomislav Jakupec</a> from <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=5187">Pixabay</a>
 
 ## Aides pour ce projet : 
-- le cours et les exemples de M. BUFFA
-- l'extension CoPilot de Visual Studio Code
+- Le cours et les exemples de M. BUFFA
+- L'extension CoPilot de Visual Studio Code
 - Le github de D.Chapoulie : https://github.com/Dorian-Chapoulie/tp_webcomponents
 - Quelques explications de la part de Y. OUALI (https://webaudio.oualiyannick.fr/)
 - Visionnage de YouTube
