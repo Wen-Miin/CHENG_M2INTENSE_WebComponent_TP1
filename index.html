@@ -2,39 +2,78 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="myComponents/style.css">
-	
-	<title> CHENG - Lecteur audio amélioré </title>
-	<script src="./myComponents/index.js" type="module"></script>
-	<link rel="icon" href="./myComponents/assets/imgs/PinClipart.com_clipart-coeur.png">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Silkscreen">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./style.css" />
 
+    <title>CHENG - Lecteur audio amélioré</title>
+    <script src="./myComponents/index.js" type="module"></script>
+    <link rel="icon" href="./myComponents/assets/imgs/PinClipart.com_clipart-coeur.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Silkscreen" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia" />
 </head>
 
 <body>
-	<div id="bloc">
-		<!-- 
+    <div id="bloc">
+        <!--
 		<video id="video" autoplay muted loop>
 			<source src="./myComponents/assets/video/Particle.mp4" type="video/mp4">
 		</video>
 		-->
 
-		<div id="content">
-			<h1> Lecteur web audio en MIAGE </h1>
+        <div class="MyDiv" id="content">
+            <h1>Lecteur web audio en MIAGE</h1>
 
-			<div id="player">
-				<!-- <my-player src="https://mainline.i3s.unice.fr/mooc/LaSueur.mp3"></my-player> -->
-				<my-player>
-					
-				</my-player>
+            <div id="player">
+                <!-- <my-player src="https://mainline.i3s.unice.fr/mooc/LaSueur.mp3"></my-player> -->
+                <my-player playlist='[
+  "myComponents/assets/audio/Ancestral Spirits.mp3",
+  "myComponents/assets/audio/Audiorezout - Storm Clouds.mp3",
+  "myComponents/assets/audio/Blood-Sweat-and-Tears.mp3",
+  "myComponents/assets/audio/Bohemian Garden.mp3",
+  "myComponents/assets/audio/Circles in the Sand.mp3"
+]' title='[
+    "Ancestral Spirits",
+    "Storm Clouds",
+    "Blood Sweat and Tears",
+    "Bohemian Garden",
+    "Circles in the Sand"
+]'>
+                </my-player>
 
-				<!-- 
+                <my-player playlist='[
+    "myComponents/assets/audio/Connecting Dreams.mp3",
+    "myComponents/assets/audio/Corporate-Business.mp3",
+    "myComponents/assets/audio/Creation.mp3",
+    "myComponents/assets/audio/Feeling-Good.mp3",
+    "myComponents/assets/audio/Fly Away.mp3"
+]' title='[
+    "Connecting Dreams",
+    "Corporate Business",
+    "Creation",
+    "Feeling Good",
+    "Fly Away"
+]'>
+                </my-player>
+
+                <my-player playlist='[
+    "myComponents/assets/audio/Its-a-Bright-Day.mp3",
+    "myComponents/assets/audio/Neon Lights.mp3",
+    "myComponents/assets/audio/Spiritual.mp3",
+    "myComponents/assets/audio/Summer-House.mp3",
+    "myComponents/assets/audio/The-Final-Battle.mp3"
+]' title='[
+    "Its a Bright Day",
+    "Neon Lights",
+    "Spiritual",
+    "Summer House",
+    "The Final Battle"
+]'>
+                </my-player>
+
+                <!--
 				<my-player loop="false" playlist=
 					"myComponents\assets\audio\Ancestral Spirits.mp3,
-					myCompenents\assetes\audio\Adventurous-Minds.mp3,
 					myComponents\assets\audio\Audiorezout - Storm Clouds.mp3,
 					myComponents\assets\audio\Blood-Sweat-and-Tears.mp3,
 					myComponents\assets\audio\Bohemian Garden.mp3,
@@ -52,18 +91,18 @@
 					">
 				</my-player>
 			-->
-			</div>
-			
-			<br>
+            </div>
 
-			<img src="https://www.pinclipart.com/picdir/big/522-5227098_zelda-clipart-cartoon-link-the-legend-of-zelda.png"
-				id="zelda" alt="Link avec une baguette magique" height="300px">
-			<img src="https://www.pinclipart.com/picdir/big/521-5213338_music-notes-png-image-music-notes-clipart-black.png"
-				id="musicNotes" alt="notes de musique" height="300px">
+            <br />
 
-		</div>
-	</div>
-
+            <img src="https://www.pinclipart.com/picdir/big/522-5227098_zelda-clipart-cartoon-link-the-legend-of-zelda.png"
+                id="zelda" alt="Link avec une baguette magique" height="300px" />
+            <img src="https://www.pinclipart.com/picdir/big/521-5213338_music-notes-png-image-music-notes-clipart-black.png"
+                id="musicNotes" alt="notes de musique" height="300px" />
+            <img src="myComponents/assets/imgs/TheLegendOfZelda-background.jpg" id="background" alt="background"
+                height="300px" />
+        </div>
+    </div>
 </body>
 
 </html>
