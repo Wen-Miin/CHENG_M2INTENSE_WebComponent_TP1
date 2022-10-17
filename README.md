@@ -37,5 +37,5 @@ Projet consistant à la réalisation d'un lecteur de musique sur le web.
 - L'extension CoPilot de Visual Studio Code
 - Le github de D.CHAPOULIE : https://github.com/Dorian-Chapoulie/tp_webcomponents
 - Quelques explications de la part de Y. OUALI (https://webaudio.oualiyannick.fr/)
-- Visionnage de YouTube
-- Bons nombres de recherches internet 
+- Visionnage de vidéos YouTube explicatives
+- Bons nombres de recherches internet (dont StackOverFlow, W3S et d'autres)
