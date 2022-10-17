@@ -4,56 +4,7 @@ const getBaseURL = () => {
     return new URL('.', import.meta.url);
 };
 
-const template = document.createElement("template");
-template.innerHTML = /*html*/`
-  <style>
-  canvas {
-      border:1px solid black;
-  }
-  </style>
-  
-  <canvas id="myCanvasFrequency" width=400></canvas>
-  <canvas id="myCanvasWaveForm" width=400></canvas>
-
-  <br>
-  <br>
-
-  <audio id="myPlayer" crossorigin="anonymous" controls></audio>
-
-    <br>
-    Progression : <input id="progress" type="range" value=0 min=0 max=1>
-    <span id="TempsActuel"></span> /
-    <span id="Durée"></span>
-    <br>
-
-  <button id="play"> <img src="http://www.i2clipart.com/cliparts/0/2/f/c/clipart-windows-media-player-play-button-updated-512x512-02fc.png" height="30" width="30"> </img> </br> Play </button> 
-  <button id="pause"> <img src= "https://pixabay.com/static/uploads/photo/2014/04/02/10/22/pause-303651_960_720.png" height="30" width="30"> </br> Pause </img> </button>
-  <button id="recule10"> <img src= "https://www.clker.com/cliparts/z/d/S/G/q/a/windows-media-player-skip-back-button-hi.png" height="30" width="30"> </img></br> -10s </button>
-  <button id="avance10"> <img src= "http://www.clker.com/cliparts/r/g/H/t/P/o/windows-media-player-skip-forward-button-hi.png" height="30" width="30"> </br> +10s </button>
-  <button id="replay"><img src= "https://www.freeiconspng.com/uploads/restore-icon-png-10.png" height="30" width="30"> </br> Replay </img></button>
-  <button id="mute"> <img src= "https://freesvg.org/img/mute-2.png" height="30" width="30"> </br> Mute </img></button>
-
-  <webaudio-knob id="volumeKnob" 
-    src="myComponents/assets/imgs/LittlePhatty.png" 
-    value=100 min=0 max=100 step=0.1 
-    diameter="35" 
-    tooltip="Volume: %d">
-  </webaudio-knob>
-  
-  <br>
-  <label>Vitesse de lecture
-     0 <input id="vitesseLecture" type="range" min=0.2 max=4 step=0.1 value=1> 4
-  </label>
-  <br>
-  <br>
-  
-  <label for="balance"> Balance : </label>
-  Gauche
-  <input type="range" min="-1" max="1" step="0.1" value="0" id="pannerSlider" /> Droite
-  <br>
-  <br>
-
-  `;
+//const template = document.createElement("template");
 
 //let audioComponent = document.querySelector ("my-player");
 
@@ -69,6 +20,52 @@ class MyAudioPlayer extends HTMLElement {
         this.attachShadow({ mode: "open" });
 
         console.log("URL de base du composant : " + getBaseURL())
+
+        //création de la playlist (musiques dans le dossier assets)
+        this.playlist = [
+            "myComponents/assets/audio/Ancestral Spirits.mp3",
+            "myComponents/assets/audio/Adventurous-Minds.mp3",
+            "myComponents/assets/audio/Audiorezout - Storm Clouds.mp3",
+            "myComponents/assets/audio/Blood-Sweat-and-Tears.mp3",
+            "myComponents/assets/audio/Bohemian Garden.mp3",
+            "myComponents/assets/audio/Circles in the Sand.mp3",
+            "myComponents/assets/audio/Connecting Dreams.mp3",
+            "myComponents/assets/audio/Corporate-Business.mp3",
+            "myComponents/assets/audio/Creation.mp3",
+            "myComponents/assets/audio/Feeling-Good.mp3",
+            "myComponents/assets/audio/Fly Away.mp3",
+            "myComponents/assets/audio/Its-a-Bright-Day.mp3",
+            "myComponents/assets/audio/Neon Lights.mp3",
+            "myComponents/assets/audio/Spiritual.mp3",
+            "myComponents/assets/audio/Summer-House.mp3",
+            "myComponents/assets/audio/The-Final-Battle.mp3"
+        ];
+
+        //tableau liste des titres de chaque chanson
+        this.listeTitres = [
+            "Ancestral Spirits",
+            "Adventurous Minds",
+            "Storm Clouds",
+            "Blood Sweat and Tears",
+            "Bohemian Garden",
+            "Circles in the Sand",
+            "Connecting Dreams",
+            "Corporate Business",
+            "Creation",
+            "Feeling Good",
+            "Fly Away",
+            "Its a Bright Day",
+            "Neon Lights",
+            "Spiritual",
+            "Summer House",
+            "The Final Battle"
+        ];
+
+        // récupération de l'élement d'une musique
+        this.i = 0;
+        this.piste = this.playlist[this.i];
+        console.log ("piste : " + this.piste);
+        this.titre = this.listeTitres[this.i];
     }
 
     // Définition des valeurs initiales 
@@ -76,11 +73,15 @@ class MyAudioPlayer extends HTMLElement {
         const volumeMax = this.audioCtx.destination.maxGain;
         const volumeKnob = this.shadowRoot.querySelector("#volumeKnob");
         volumeKnob.value = volumeMax * 100;
-        this.volume = 0.5;
-        this.progress = 0;
-        this.playing = false;
-        this.vitesseLecture = 1;
-        this.currentTime = 0;
+        this.progression = this.shadowRoot.querySelector("#progression");
+        this.currentTimeEl = this.progression.children[0];
+        this.progressBarEl = this.progression.children[1];
+        this.durationEl = this.progression.children[2];
+        this.balanceSlider = this.shadowRoot.querySelector("#balanceSlider");
+        this.shadowRoot.querySelector('.durée').innerHTML = this.convertionTemps(this.player.duration);
+        this.shadowRoot.querySelector(".titre").innerHTML = this.titre;
+        this.shadowRoot.querySelector(".piste").innerHTML = this.piste;
+        //var pannerNode;
     }
 
 
@@ -91,17 +92,73 @@ class MyAudioPlayer extends HTMLElement {
 
         // On clone le template HTML/CSS (la gui du wc)
         // et on l'ajoute dans le shadow DOM
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        //this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+        this.shadowRoot.innerHTML = /*html*/`
+  <style>
+  canvas {
+      border:1px solid black;
+  }
+  </style>
+  
+  <canvas id="my-canvas-frequency" width=400></canvas>
+  <canvas id="my-canvas-wave-form" width=400></canvas>
+
+  <br>
+  <br>
+
+  <audio id="myPlayer" src="${this.piste}" crossorigin="anonymous" controls></audio>
+  <h1 class="titre"> Titre : ${this.titre}</h1>
+  
+  <br>
+  <div id="progression">
+        Progression : 
+        <span id="tempsActuel">0:00</span> 
+        <input id="progressBar" type="range" value=0 min=0 max=1>
+        <span id="durée">0:00</span>
+    </div>
+    <br>
+
+  <button id="previous"> <img src="./myComponents/assets/imgs/backward-icon.png" height="30" width="30"> </img> </br> Previous </button> 
+  <button id="play"> <img src="http://www.i2clipart.com/cliparts/0/2/f/c/clipart-windows-media-player-play-button-updated-512x512-02fc.png" height="30" width="30"> </img> </br> Play </button> 
+  <button id="pause"> <img src= "https://pixabay.com/static/uploads/photo/2014/04/02/10/22/pause-303651_960_720.png" height="30" width="30"> </br> Pause </img> </button>
+  <button id="recule10"> <img src= "https://www.clker.com/cliparts/z/d/S/G/q/a/windows-media-player-skip-back-button-hi.png" height="30" width="30"> </img></br> -10s </button>
+  <button id="avance10"> <img src= "http://www.clker.com/cliparts/r/g/H/t/P/o/windows-media-player-skip-forward-button-hi.png" height="30" width="30"> </br> +10s </button>
+  <button id="replay"><img src= "https://www.freeiconspng.com/uploads/restore-icon-png-10.png" height="30" width="30"> </br> Replay </img></button>
+  <button id="mute"> <img src= "https://freesvg.org/img/mute-2.png" height="30" width="30"> </br> Mute </img></button>
+  <button id="next"> <img src="./myComponents/assets/imgs/forward-icon.png" height="30" width="30"> </img> </br> Next </button> 
+  
+
+  <webaudio-knob id="volumeKnob" 
+    src="myComponents/assets/imgs/LittlePhatty.png" 
+    value=100 min=0 max=100 step=0.01 
+    diameter="35" 
+    tooltip="Volume: %d">
+  </webaudio-knob>
+  
+  <br>
+  <label>Vitesse de lecture
+     0 <input id="vitesseLecture" type="range" min=0.2 max=4 step=0.1 value=1> 4
+  </label>
+  <br>
+  <br>
+  
+  <label for="balance"> Balance : </label>
+  Gauche
+  <input type="range" min="-1" max="1" step="0.1" value="0" id="balanceSlider" /> Droite
+  <br>
+  <br>
+
+  `;
         // fix relative URLs
         this.fixRelativeURLs();
 
         this.player = this.shadowRoot.querySelector("#myPlayer");
-        this.player.src = this.getAttribute("src");
+        //this.player.src = this.getAttribute("src");
 
         // récupérer le canvas pour le dessin du son
-        this.canvasFrequency = this.shadowRoot.querySelector("#myCanvasFrequency");
-        this.canvasWaveForm = this.shadowRoot.querySelector("#myCanvasWaveForm");
+        this.canvasFrequency = this.shadowRoot.querySelector("#my-canvas-frequency");
+        this.canvasWaveForm = this.shadowRoot.querySelector("#my-canvas-wave-form");
         this.canvasFrequencyCtx = this.canvasFrequency.getContext("2d");
         this.canvasWaveFormCtx = this.canvasWaveForm.getContext("2d");
 
@@ -121,8 +178,12 @@ class MyAudioPlayer extends HTMLElement {
             this.animationLoop();
         });
 
+
         // mise à jour de la barre de progression
         this.updateProgress();
+
+        // 
+        //this.balanceAudio();
 
     }
 
@@ -141,29 +202,38 @@ class MyAudioPlayer extends HTMLElement {
         this.analyserNode.fftSize = 512;
         this.bufferLength = this.analyserNode.frequencyBinCount;
         this.dataArray = new Uint8Array(this.bufferLength);
-        
+
 
         // lecteur audio -> analyser -> haut parleurs
         playerNode.connect(this.analyserNode);
         this.analyserNode.connect(audioContext.destination);
-        
+
         //for waveForm
         this.analyserWaveForm = this.analyserNode;
         this.analyserWaveForm.fftSize = 1024;
         this.analyserWaveForm.bufferLength = this.analyserWaveForm.frequencyBinCount;
         this.analyserWaveForm.dataArray = new Uint8Array(
-        this.analyserWaveForm.bufferLength
+            this.analyserWaveForm.bufferLength
         );
-        
+
+        //pour balance 
+        // create source and gain node
+        //var source = audioContext.createMediaElementSource(this.player);
+        this.pannerNode = audioContext.createStereoPanner();
+
+        // connect nodes together
+        playerNode.connect(this.pannerNode);
+        this.pannerNode.connect(audioContext.destination);
+
     }
 
-    
+
     animationLoop() {
         // 1 on efface le canvas
         this.canvasFrequencyCtx.clearRect(0, 0, this.canvasFrequency.width, this.canvasFrequency.height);
 
         // 2 on dessine les objets
-        
+
         // Get the analyser data
         this.analyserNode.getByteFrequencyData(this.dataArray);
 
@@ -194,9 +264,9 @@ class MyAudioPlayer extends HTMLElement {
         this.canvasWaveFormCtx.lineWidth = 2;
         this.canvasWaveFormCtx.strokeStyle = "lightgreen";
         this.canvasWaveFormCtx.beginPath();
-        
+
         let sliceWidth = this.canvasWaveForm.width / this.analyserWaveForm.bufferLength;
-        let a = 0; 
+        let a = 0;
         for (let j = 0; j < this.analyserWaveForm.bufferLength; j++) {
             let v = this.analyserWaveForm.dataArray[j] / 128;
             let b = (v * this.canvasWaveForm.height) / 2;
@@ -226,12 +296,14 @@ class MyAudioPlayer extends HTMLElement {
                 e.src = getBaseURL() + path;
             }
         });
+
     }
 
     // Déinition des écouteurs d'événements
     defineListeners() {
         this.shadowRoot.querySelector("#play").onclick = () => {
             this.player.play();
+            //this.shadowRoot.querySelector(".durée").innerHTML = this.convertionTemps(this.player.duration);
             this.audioCtx.resume(); // à cause de la politique de Chrome (autoplay) qui bloque le son s'il n'y pas de user interaction
             console.log("mise en route de l'audio");
         }
@@ -243,17 +315,17 @@ class MyAudioPlayer extends HTMLElement {
 
         this.shadowRoot.querySelector("#recule10").onclick = () => {
             this.player.currentTime -= 10;
-            console.log("reculé de 10" + this.player.currentTime);
+            console.log("reculé de 10, temps à " + this.convertionTemps(this.player.currentTime));
         }
 
         this.shadowRoot.querySelector("#avance10").onclick = () => {
             this.player.currentTime += 10;
-            console.log("avancé de 10" + this.player.currentTime);
+            console.log("avancé de 10, temps à " + this.convertionTemps(this.player.currentTime));
         }
 
         this.shadowRoot.querySelector("#replay").onclick = () => {
             this.player.currentTime = 0;
-            console.log("replay , remise à " + this.player.currentTime);
+            console.log("replay , remise à " + this.convertionTemps(this.player.currentTime));
         }
 
 
@@ -262,54 +334,150 @@ class MyAudioPlayer extends HTMLElement {
             console.log("vitesse =  " + this.player.playbackRate);
         }
 
-        this.shadowRoot.querySelector("#progress").onchange = (event) => {
-            //const tempsActuel = this.player.currentTime * (parseFloat(event.target.value) - 1000 / 60);
-            //tempsActuel = parseFloat(event.target.value);
-            this.player.currentTime = event.target.value
-            console.log("progression =  " + this.player.currentTime);
-        }
-
         this.shadowRoot.querySelector("#volumeKnob").oninput = (event) => {
             this.player.volume = (parseFloat(event.target.value) / 100).toFixed(2);
-            //this.player.volume = parseFloat(value, 10);
-            //this.player.volume = parseFloat(event);
             console.log("volumeKnob = " + this.player.volume);
         }
 
-        this.shadowRoot.querySelector("#Mute").onclick = (event) => {
+        this.shadowRoot.querySelector("#mute").onclick = () => {
             this.player.volume = 0;
+            this.volumeKnob = 0;
             console.log("volume = " + this.player.volume);
         }
 
+    //this.progressBar = this.shadowRoot.querySelector('#progressBar');
+    //écouteur pour la durée d'une musique
+    this.player.addEventListener('loadedmetadata', () => {
+        //this.shadowRoot.querySelector("#progress") = this.player.duration;
+        this.duration = this.player.duration;
+        this.progressBar = document.getElementsByClassName("#progressBar");
+        this.progressBar.max = this.player.duration; //durée de la musique
+        this.progressBar.value = this.player.currentTime; //position de la barre de progression
+        this.progressBar.step = 0.1; //pas de la barre de progression
+        //const secondes = ParseInt('${this.duration % 60}', 10);
+        //const minutes = ParseInt('${(this.duration/60) % 60}', 10);
+        //this.duration.textContent = '${minutes}:${secondes}';
+        console.log("durée de la musique : " + this.convertionTemps(this.player.duration));
+        console.log("temps actuel : " + this.convertionTemps(this.player.currentTime));
+    });
+
+        //this.shadowRoot.querySelector("#progressBar").oninput = (event) => {
+        //    //const tempsActuel = this.player.currentTime * (parseFloat(event.target.value) - 1000 / 60);
+        //    //tempsActuel = parseFloat(event.target.value);
+        //    this.player.currentTime = event.target.value
+        //    console.log("progression =  " + this.player.currentTime);
+        //}
+
+        
+        ////écouteur pour la balance droite / gauche 
+        this.shadowRoot.querySelector('#balanceSlider').oninput = (evt) => {
+            this.pannerNode.pan.value = evt.target.value;
+            this.audioContext.currentTime
+            console.log("balance modifiée, valeur : " + this.pannerNode.pan.value);
+        }
+
+        // écouteur pour le bouton previous
+        this.shadowRoot.querySelector('#previous').onclick = (evt) => {
+            this.player.src = this.previousTitre();
+            this.player.play();
+            console.log("previous titre");
+        }
+
+        // écouteur pour le bouton next
+        this.shadowRoot.querySelector('#next').onclick = () => {
+            this.i++;
+            if (this.i >= this.playlist.length) {
+                this.i = 0;
+            }
+            console.log(this.player.src);
+            console.log(this.playlist[this.i]);
+    
+            //this.player.piste = this.playlist[this.i];
+            this.piste = this.playlist[this.i];
+            this.titre = this.listeTitres[this.i];
+            console.log(this.piste);
+            console.log(this.titre );
+            
+            try {
+                this.player.src = this.piste;
+                this.player.load();
+                this.player.play();
+            }
+            catch (e) {
+                console.log("erreur : " + e);
+            }
+            //this.player.src = this.playlist[this.i];
+
+            //this.player.play();
+            console.log("next titre");
+        }
+
+        
+    }
+
+    // fonction pour connaitre la durée de la musique en minutes et secondes
+    convertionTemps(temps) {
+        let minutes = Math.floor(temps / 60);
+        let secondes = Math.floor(temps - minutes * 60);
+        if (secondes < 10) {
+            secondes = "0" + secondes;
+        }
+        return minutes + ":" + secondes;
+    }
+
+    // fonction pour passer à la musique précédente
+    previousTitre() {
+        this.i--;
+        if (this.i < 0) {
+            this.i = this.playlist.length - 1;
+        }
+        //this.playlist[this.i];
+        this.player.piste = this.playlist[this.i];
+        this.piste = this.playlist[this.i];
+        this.title = this.listeTitres[this.i];
+        this.player.play();
+    }
+
+    // fonction pour passer à la musique suivante
+    nextTitre() {
 
     }
 
+
+
     updateProgress() {
-        const ProgressListen = this.shadowRoot.querySelector("#progress");
-        ProgressListen.value = this.player.currentTime;
-        ProgressListen.max = this.player.duration;
-        console.log("progression =  " + this.player.currentTime);
-        console.log("durée =  " + this.player.duration);
-        this.shadowRoot.querySelector("#TempsActuel").innerHTML = (this.player.currentTime);
-        this.shadowRoot.querySelector("#Durée").innerHTML = (this.player.duration);
+        //const ProgressListen = this.shadowRoot.querySelector("#progressBar");
+        //ProgressListen.value = this.player.currentTime;
+        //ProgressListen.max = this.player.duration;
+        //console.log("progression =  " + this.player.currentTime);
+        //console.log("durée =  " + this.player.duration);
+        //this.shadowRoot.querySelector("#tempsActuel").innerHTML = (this.player.currentTime);
+        //this.shadowRoot.querySelector("#Durée").innerHTML = (this.player.duration);
         //const tempsActuel = this.player.currentTime * (parseFloat(event.target.value) - 1000 / 60);
     }
 
+    //fonction pour events
+    //attachEvent() {
+    //    this.player.addEventListener("click", this.clickToPlay.bind(this));
+    //}
+//
+    //
+    //async clickToPlay() {
+    //    if (this.audioCtx.state === "suspended") {
+    //        await this.audioCtx.resume();
+    //    }
+//
+    //    if (this.playing) {
+    //        return this.audioCtx.pause();
+    //        this.playing = false;
+    //    } else {
+    //        await this.audioCtx.play();
+    //        this.playing = true;
+    //    }
+    //}
 
-    //fonction pour la balance audio
-    balanceAudio() {
-        // Create a stereo panner
-        this.stereoPanner = this.audioCtx.createStereoPanner();
-        this.stereoPanner.pan.value = 0;
-        this.stereoPanner.connect(this.audioCtx.destination);
-        this.player.connect(this.stereoPanner);
 
-         //écouteur pour la balance droite / gauche 
-         this.shadowRoot.querySelector("#balance").oninput = (event) => {
-            this.pannerNode.pan.value = event.target.value;
-         };
-    }
-           
+
 
     // L'API du Web Component
 
