@@ -35,7 +35,7 @@ Projet consistant à la réalisation d'un lecteur de musique sur le web.
 ## Aides pour ce projet : 
 - Le cours et les exemples de M. BUFFA
 - L'extension CoPilot de Visual Studio Code
-- Le github de D.Chapoulie : https://github.com/Dorian-Chapoulie/tp_webcomponents
+- Le github de D.CHAPOULIE : https://github.com/Dorian-Chapoulie/tp_webcomponents
 - Quelques explications de la part de Y. OUALI (https://webaudio.oualiyannick.fr/)
 - Visionnage de YouTube
 - Bons nombres de recherches internet 
