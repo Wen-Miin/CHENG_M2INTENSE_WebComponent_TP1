@@ -35,4 +35,4 @@ Décomposition en 3 lecteurs ayant chacun 5 chansons.
 - Explications de la part de Y. OUALI (https://webaudio.oualiyannick.fr/) qui m'a permis de bien comprendre le projet 
 - Visionnage de vidéos YouTube
 - Le github de D.CHAPOULIE : https://github.com/Dorian-Chapoulie/tp_webcomponents
-- Bons nombres de recherches internet 
+- Bons nombres de recherches internet (dont StackOverFlow, W3S et d'autres)
